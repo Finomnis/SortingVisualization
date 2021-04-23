@@ -52,3 +52,12 @@ pub fn sort(data: &mut SortableData) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn sort() {
+        let result = crate::sortable_data::SortableData::new(10000).sort(super::sort);
+        assert!(result.is_sorted());
+    }
+}

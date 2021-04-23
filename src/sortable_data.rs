@@ -67,6 +67,17 @@ impl<'a> SortableData<'a> {
             visualization.on_data_changed(&self.data);
         }
     }
+
+    pub fn is_sorted(&self) -> bool {
+        let mut prev = f32::NEG_INFINITY;
+        for &next in &self.data {
+            if prev > next {
+                return false;
+            }
+            prev = next;
+        }
+        return true;
+    }
 }
 
 impl<'a> std::ops::Index<usize> for SortableData<'a> {
