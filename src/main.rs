@@ -25,6 +25,13 @@ fn main() {
     .init();
 
     for (name, algorithm) in get_algorithms() {
+        // If an algorithm is specified on the command line, only run that algorithm
+        if let Some(wanted_algorithm) = &options.algorithm {
+            if wanted_algorithm != name {
+                continue;
+            }
+        }
+
         log::info!("Running {} ...", name);
 
         // Two passes required:

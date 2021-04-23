@@ -1,6 +1,8 @@
 use clap::{crate_version, AppSettings, Clap};
 
+use crate::sorting_algorithms::get_algorithms;
 use crate::visualizations::image::color_palettes::get_palettes;
+
 #[derive(Clap)]
 #[clap(version = crate_version!())]
 #[clap(setting = AppSettings::ColoredHelp)]
@@ -11,6 +13,9 @@ pub struct Options {
     /// The color palette to use for the final image
     #[clap(long, default_value="rainbow", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
     pub palette: String,
+    /// Only run specified sorting algorithm
+    #[clap(long, possible_values = &get_algorithms().keys().cloned().collect::<Vec<_>>()[..])]
+    pub algorithm: Option<String>,
 }
 
 pub fn parse_command_line_options() -> Options {
