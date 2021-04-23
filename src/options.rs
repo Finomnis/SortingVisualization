@@ -12,7 +12,7 @@ pub struct Options {
     pub verbose: i32,
 
     /// The color palette to use for the final image
-    #[clap(long, default_value="rainbow", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
+    #[clap(long, default_value="grayscale", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
     pub palette: String,
 
     /// Only run specified sorting algorithm
@@ -20,11 +20,11 @@ pub struct Options {
     pub algorithm: Option<String>,
 
     /// The width of the output image
-    #[clap(long, default_value = "512")]
+    #[clap(long, default_value = "400")]
     pub width: usize,
 
     /// The height of the output image
-    #[clap(long, default_value = "1024")]
+    #[clap(long, default_value = "400")]
     pub height: usize,
 }
 
