@@ -37,13 +37,21 @@ fn main() {
         // Two passes required:
         // First: figure out the number of steps required
         // Second: write steps to image
-        let num_steps = SortableData::new(512).sort(algorithm).num_steps();
+        let num_steps = {
+            let result = SortableData::new(options.width).sort(algorithm);
+            let num_steps = result.num_steps();
+
+            log::info!("First iteration done. Steps: {}", num_steps);
+            log::debug!("Result if first run: {}", result);
+            num_steps
+        };
 
         let mut console_visualization = ConsoleVisualization::new();
-        let mut image_visualization = ImageVisualization::new(512, 1024, num_steps)
-            .use_color_palette(get_palettes()[options.palette.as_str()]);
+        let mut image_visualization =
+            ImageVisualization::new(options.width, options.height, num_steps)
+                .use_color_palette(get_palettes()[options.palette.as_str()]);
 
-        SortableData::new(512)
+        SortableData::new(options.width)
             .add_visualization(&mut console_visualization)
             .add_visualization(&mut image_visualization)
             .sort(algorithm);

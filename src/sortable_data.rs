@@ -9,6 +9,7 @@ pub struct SortableData<'a> {
     pub rng: ChaCha20Rng,
     visualizations: Vec<&'a mut dyn SortingVisualization>,
     step_counter: usize,
+    message_pending: bool,
 }
 
 impl<'a> SortableData<'a> {
@@ -28,14 +29,17 @@ impl<'a> SortableData<'a> {
             rng,
             visualizations: vec![],
             step_counter: 0,
+            message_pending: false,
         }
     }
 
     pub fn sort(mut self, algorithm: SortingAlgorithm) -> Self {
+        self.send_pending_message();
         for visualization in &mut self.visualizations {
             visualization.on_start(&self.data);
         }
         algorithm(&mut self);
+        self.send_pending_message();
         for visualization in &mut self.visualizations {
             visualization.on_finished();
         }
@@ -48,11 +52,10 @@ impl<'a> SortableData<'a> {
     }
 
     pub fn swap(&mut self, a: usize, b: usize) {
+        self.send_pending_message();
+
         self.data.swap(a, b);
-        self.step_counter += 1;
-        for visualization in &mut self.visualizations {
-            visualization.on_data_changed(&self.data);
-        }
+        self.send_message();
     }
 
     pub fn len(&self) -> usize {
@@ -62,6 +65,20 @@ impl<'a> SortableData<'a> {
     pub fn num_steps(&self) -> usize {
         self.step_counter
     }
+
+    fn send_message(&mut self) {
+        self.step_counter += 1;
+        for visualization in &mut self.visualizations {
+            visualization.on_data_changed(&self.data);
+        }
+    }
+
+    fn send_pending_message(&mut self) {
+        if self.message_pending {
+            self.message_pending = false;
+            self.send_message();
+        }
+    }
 }
 
 impl<'a> std::ops::Index<usize> for SortableData<'a> {
@@ -69,6 +86,14 @@ impl<'a> std::ops::Index<usize> for SortableData<'a> {
 
     fn index(&self, index: usize) -> &Self::Output {
         self.data.index(index)
+    }
+}
+
+impl<'a> std::ops::IndexMut<usize> for SortableData<'a> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.send_pending_message();
+        self.message_pending = true;
+        self.data.index_mut(index)
     }
 }
 

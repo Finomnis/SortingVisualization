@@ -1,4 +1,5 @@
 mod bubble_sort;
+mod cycle_sort;
 mod insertion_sort;
 mod selection_sort;
 
@@ -13,6 +14,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     algorithms.insert("bubble_sort", bubble_sort::sort);
     algorithms.insert("insertion_sort", insertion_sort::sort);
     algorithms.insert("selection_sort", selection_sort::sort);
+    algorithms.insert("cycle_sort", cycle_sort::sort);
 
     algorithms
 }

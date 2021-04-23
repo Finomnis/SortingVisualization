@@ -10,12 +10,22 @@ pub struct Options {
     /// A level of verbosity, and can be used multiple times
     #[clap(short, long, parse(from_occurrences))]
     pub verbose: i32,
+
     /// The color palette to use for the final image
     #[clap(long, default_value="rainbow", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
     pub palette: String,
+
     /// Only run specified sorting algorithm
     #[clap(long, possible_values = &get_algorithms().keys().cloned().collect::<Vec<_>>()[..])]
     pub algorithm: Option<String>,
+
+    /// The width of the output image
+    #[clap(long, short, default_value = "512")]
+    pub width: usize,
+
+    /// The height of the output image
+    #[clap(long, short, default_value = "1024")]
+    pub height: usize,
 }
 
 pub fn parse_command_line_options() -> Options {
