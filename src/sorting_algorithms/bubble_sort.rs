@@ -1,6 +1,6 @@
 use crate::sortable_data::SortableData;
 
-pub fn bubble_sort(data: &mut SortableData) {
+pub fn sort(data: &mut SortableData) {
     // Source: https://en.wikipedia.org/wiki/Bubble_sort
     let n = data.len();
     loop {

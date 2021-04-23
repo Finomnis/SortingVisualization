@@ -120,8 +120,11 @@ impl SortingVisualization for ImageVisualization {
             .round() as usize;
 
         if desired_line_pos != self.current_line_pos {
-            self.current_line
-                .write_to_image(&mut self.image, self.current_line_pos);
+            while self.current_line_pos < desired_line_pos {
+                self.current_line
+                    .write_to_image(&mut self.image, self.current_line_pos);
+                self.current_line_pos += 1;
+            }
 
             self.current_line = CurrentLine::new(self.width, self.color_palette);
             self.current_line_pos = desired_line_pos;

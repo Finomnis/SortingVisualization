@@ -1,6 +1,6 @@
 use crate::sortable_data::SortableData;
 
-pub fn insertion_sort(data: &mut SortableData) {
+pub fn sort(data: &mut SortableData) {
     // Source: https://en.wikipedia.org/wiki/Insertion_sort
     for i in 1..data.len() {
         let mut j = i;
