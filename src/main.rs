@@ -1,3 +1,4 @@
+mod options;
 mod sortable_data;
 mod sorting_algorithms;
 mod visualizations;
@@ -7,6 +8,19 @@ use visualizations::console::ConsoleVisualization;
 use visualizations::image::{color_palettes, ImageVisualization};
 
 fn main() {
+    let options = options::parse_command_line_options();
+
+    // Initialize logger
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(
+        match options.verbose {
+            0 => "warn",
+            1 => "info",
+            2 => "debug",
+            _ => "trace",
+        },
+    ))
+    .init();
+
     // Two passes required:
     // First: figure out the number of steps required
     // Second: write steps to image

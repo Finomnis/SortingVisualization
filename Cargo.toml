@@ -11,6 +11,10 @@ rand = "0.8.3"
 rand_chacha = "0.3.0"
 image = "0.23.14"
 palette = "0.5.0"
+log = "0.4.0"
+env_logger = "0.8.3"
+
+clap = { git = "https://github.com/clap-rs/clap/" }
 
 [profile.release]
 debug = true
