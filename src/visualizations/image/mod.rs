@@ -1,10 +1,15 @@
+pub mod color_palettes;
+
 use ::image::{ImageBuffer, RgbImage};
+
+use self::color_palettes::ColorPalette;
 
 use super::SortingVisualization;
 
 struct CurrentLine {
     data: Vec<CurrentLinePixel>,
     count: u32,
+    color_palette: ColorPalette,
 }
 
 #[derive(Clone)]
@@ -14,8 +19,16 @@ struct CurrentLinePixel {
     blue: u32,
 }
 
+fn clamp(val: u32) -> u8 {
+    if val > 255 {
+        255
+    } else {
+        val as u8
+    }
+}
+
 impl CurrentLine {
-    fn new(width: usize) -> Self {
+    fn new(width: usize, color_palette: ColorPalette) -> Self {
         Self {
             data: vec![
                 CurrentLinePixel {
@@ -26,34 +39,25 @@ impl CurrentLine {
                 width
             ],
             count: 0,
+            color_palette,
         }
     }
 
     fn add(&mut self, data: &Vec<f32>) {
         assert!(data.len() == self.data.len());
 
-        for (pos, data) in data
-            .iter()
-            .map(|val| -> palette::rgb::Rgb { palette::Hsv::new(val * 240.0, 1.0, 1.0).into() })
-            .enumerate()
-        {
-            self.data[pos].red += (data.red * 255.0).round() as u32;
-            self.data[pos].green += (data.green * 255.0).round() as u32;
-            self.data[pos].blue += (data.blue * 255.0).round() as u32;
+        let color_palette = self.color_palette;
+
+        for (pos, [red, green, blue]) in data.iter().map(|&val| color_palette(val)).enumerate() {
+            self.data[pos].red += red as u32;
+            self.data[pos].green += green as u32;
+            self.data[pos].blue += blue as u32;
         }
 
         self.count += 1;
     }
 
     fn write_to_image(&self, image: &mut RgbImage, row: usize) {
-        let clamp = |val: u32| -> u8 {
-            if val > 255 {
-                255
-            } else {
-                val as u8
-            }
-        };
-
         for (pos, element) in self.data.iter().enumerate() {
             let red = clamp(element.red / self.count);
             let green = clamp(element.green / self.count);
@@ -71,6 +75,7 @@ pub struct ImageVisualization {
     current_step: usize,
     current_line: CurrentLine,
     current_line_pos: usize,
+    color_palette: ColorPalette,
 }
 
 impl ImageVisualization {
@@ -81,9 +86,15 @@ impl ImageVisualization {
             num_steps,
             image: ImageBuffer::new(width as u32, height as u32),
             current_step: 0,
-            current_line: CurrentLine::new(width),
+            current_line: CurrentLine::new(width, color_palettes::grayscale),
             current_line_pos: 0,
+            color_palette: color_palettes::grayscale,
         }
+    }
+
+    pub fn use_color_palette(mut self, palette: ColorPalette) -> Self {
+        self.color_palette = palette;
+        self
     }
 
     pub fn save(&self, path: &str) {
@@ -94,7 +105,7 @@ impl ImageVisualization {
 impl SortingVisualization for ImageVisualization {
     fn on_start(&mut self, data: &Vec<f32>) {
         self.current_step = 0;
-        self.current_line = CurrentLine::new(self.width);
+        self.current_line = CurrentLine::new(self.width, self.color_palette);
         self.current_line_pos = 0;
         self.image = ImageBuffer::new(self.width as u32, self.height as u32);
 
@@ -112,7 +123,7 @@ impl SortingVisualization for ImageVisualization {
             self.current_line
                 .write_to_image(&mut self.image, self.current_line_pos);
 
-            self.current_line = CurrentLine::new(self.width);
+            self.current_line = CurrentLine::new(self.width, self.color_palette);
             self.current_line_pos = desired_line_pos;
         }
 

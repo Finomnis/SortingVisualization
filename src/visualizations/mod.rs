@@ -1,8 +1,5 @@
-mod console;
-mod image;
-
-pub use self::image::ImageVisualization;
-pub use console::ConsoleVisualization;
+pub mod console;
+pub mod image;
 
 pub trait SortingVisualization {
     fn on_start(&mut self, data: &Vec<f32>);
