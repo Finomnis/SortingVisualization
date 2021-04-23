@@ -1,13 +1,15 @@
 use rand::{seq::SliceRandom, SeedableRng};
 use rand_chacha::ChaCha20Rng;
 
-#[derive(Debug)]
-pub struct SortableData {
+use crate::visualizations::SortingVisualization;
+
+pub struct SortableData<'a> {
     data: Vec<f32>,
     pub rng: ChaCha20Rng,
+    visualizations: Vec<&'a mut dyn SortingVisualization>,
 }
 
-impl SortableData {
+impl<'a> SortableData<'a> {
     pub fn new(size: usize) -> Self {
         let mut data = Vec::new();
         for i in 0..size {
@@ -19,7 +21,11 @@ impl SortableData {
 
         data.shuffle(&mut rng);
 
-        Self { data, rng }
+        Self {
+            data,
+            rng,
+            visualizations: vec![],
+        }
     }
 
     pub fn sort(mut self, algorithm: impl Fn(&mut SortableData)) -> Self {
@@ -27,8 +33,16 @@ impl SortableData {
         self
     }
 
+    pub fn add_visualization(mut self, visualization: &'a mut impl SortingVisualization) -> Self {
+        self.visualizations.push(visualization);
+        self
+    }
+
     pub fn swap(&mut self, a: usize, b: usize) {
         self.data.swap(a, b);
+        for visualization in &self.visualizations {
+            visualization.on_data_changed(&self.data);
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -36,7 +50,7 @@ impl SortableData {
     }
 }
 
-impl std::ops::Index<usize> for SortableData {
+impl<'a> std::ops::Index<usize> for SortableData<'a> {
     type Output = f32;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -44,7 +58,7 @@ impl std::ops::Index<usize> for SortableData {
     }
 }
 
-impl std::fmt::Display for SortableData {
+impl<'a> std::fmt::Display for SortableData<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self.data)
     }
