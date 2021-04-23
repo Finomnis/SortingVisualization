@@ -1,6 +1,7 @@
 use rand::{seq::SliceRandom, SeedableRng};
 use rand_chacha::ChaCha20Rng;
 
+use crate::sorting_algorithms::SortingAlgorithm;
 use crate::visualizations::SortingVisualization;
 
 pub struct SortableData<'a> {
@@ -30,7 +31,7 @@ impl<'a> SortableData<'a> {
         }
     }
 
-    pub fn sort(mut self, algorithm: impl Fn(&mut SortableData)) -> Self {
+    pub fn sort(mut self, algorithm: SortingAlgorithm) -> Self {
         for visualization in &mut self.visualizations {
             visualization.on_start(&self.data);
         }
