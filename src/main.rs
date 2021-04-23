@@ -35,20 +35,20 @@ fn main() {
         log::info!("Running {} ...", name);
 
         // Two passes required:
-        // First: figure out the number of steps required
-        // Second: write steps to image
-        let num_steps = {
+        // First: figure out the number of frames required
+        // Second: write frames to image
+        let num_frames = {
             let result = SortableData::new(options.width).sort(algorithm);
-            let num_steps = result.num_steps();
+            let num_frames = result.num_frames();
 
-            log::info!("First iteration done. Steps: {}", num_steps);
+            log::info!("First iteration done. Frames: {}", num_frames);
             log::debug!("Result if first run: {}", result);
-            num_steps
+            num_frames
         };
 
         let mut console_visualization = ConsoleVisualization::new();
         let mut image_visualization =
-            ImageVisualization::new(options.width, options.height, num_steps)
+            ImageVisualization::new(options.width, options.height, num_frames)
                 .use_color_palette(get_palettes()[options.palette.as_str()]);
 
         SortableData::new(options.width)

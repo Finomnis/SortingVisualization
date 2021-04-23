@@ -70,22 +70,22 @@ impl CurrentLine {
 pub struct ImageVisualization {
     width: usize,
     height: usize,
-    num_steps: usize,
+    num_frames: usize,
     image: RgbImage,
-    current_step: usize,
+    current_frame: usize,
     current_line: CurrentLine,
     current_line_pos: usize,
     color_palette: ColorPalette,
 }
 
 impl ImageVisualization {
-    pub fn new(width: usize, height: usize, num_steps: usize) -> Self {
+    pub fn new(width: usize, height: usize, num_frames: usize) -> Self {
         Self {
             width,
             height,
-            num_steps,
+            num_frames,
             image: ImageBuffer::new(width as u32, height as u32),
-            current_step: 0,
+            current_frame: 0,
             current_line: CurrentLine::new(width, color_palettes::grayscale),
             current_line_pos: 0,
             color_palette: color_palettes::grayscale,
@@ -103,21 +103,19 @@ impl ImageVisualization {
 }
 
 impl SortingVisualization for ImageVisualization {
-    fn on_start(&mut self, data: &Vec<f32>) {
-        self.current_step = 0;
+    fn on_start(&mut self) {
+        self.current_frame = 0;
         self.current_line = CurrentLine::new(self.width, self.color_palette);
         self.current_line_pos = 0;
         self.image = ImageBuffer::new(self.width as u32, self.height as u32);
-
-        self.current_line.add(data);
     }
 
     fn on_data_changed(&mut self, data: &Vec<f32>) {
-        self.current_step += 1;
-
-        let desired_line_pos = (((self.current_step * (self.height - 1)) as f32)
-            / (self.num_steps as f32))
+        let desired_line_pos = (((self.current_frame * (self.height - 1)) as f32)
+            / ((self.num_frames - 1) as f32))
             .round() as usize;
+
+        self.current_frame += 1;
 
         if desired_line_pos != self.current_line_pos {
             while self.current_line_pos < desired_line_pos {

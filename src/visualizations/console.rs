@@ -11,9 +11,8 @@ impl ConsoleVisualization {
 }
 
 impl SortingVisualization for ConsoleVisualization {
-    fn on_start(&mut self, data: &Vec<f32>) {
+    fn on_start(&mut self) {
         log::info!("Started ...");
-        log::debug!("{:?}", data);
     }
 
     fn on_data_changed(&mut self, data: &Vec<f32>) {
@@ -22,6 +21,6 @@ impl SortingVisualization for ConsoleVisualization {
     }
 
     fn on_finished(&mut self) {
-        log::info!("Finished. ({} iterations)", self.iterations)
+        log::info!("Finished. ({} frames)", self.iterations)
     }
 }
