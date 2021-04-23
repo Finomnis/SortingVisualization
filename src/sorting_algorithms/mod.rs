@@ -4,6 +4,7 @@ mod comb_sort;
 mod cycle_sort;
 mod gnome_sort;
 mod insertion_sort;
+mod odd_even_sort;
 mod selection_sort;
 
 use crate::sortable_data::SortableData;
@@ -21,6 +22,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     algorithms.insert("cocktail_shaker_sort", cocktail_shaker_sort::sort);
     algorithms.insert("comb_sort", comb_sort::sort);
     algorithms.insert("gnome_sort", gnome_sort::sort);
+    algorithms.insert("odd_even_sort", odd_even_sort::sort);
 
     algorithms
 }
