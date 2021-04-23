@@ -4,6 +4,8 @@ mod comb_sort;
 mod cycle_sort;
 mod insertion_sort;
 mod odd_even_sort;
+mod quicksort_hoare;
+mod quicksort_lomuto;
 mod selection_sort;
 mod shellsort;
 
@@ -23,6 +25,8 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     algorithms.insert("comb_sort", comb_sort::sort);
     algorithms.insert("odd_even_sort", odd_even_sort::sort);
     algorithms.insert("shellsort", shellsort::sort);
+    algorithms.insert("quicksort_hoare", quicksort_hoare::sort);
+    algorithms.insert("quicksort_lomuto", quicksort_lomuto::sort);
 
     algorithms
 }
