@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::clamp;
 
 pub type ColorPalette = fn(f32) -> [u8; 3];
@@ -13,4 +15,13 @@ pub fn rainbow(value: f32) -> [u8; 3] {
     let green = (rgb.green * 255.0).round() as u8;
     let blue = (rgb.blue * 255.0).round() as u8;
     [red, green, blue]
+}
+
+pub fn get_palettes() -> HashMap<&'static str, ColorPalette> {
+    let mut algorithms: HashMap<&'static str, ColorPalette> = HashMap::new();
+
+    algorithms.insert("grayscale", grayscale);
+    algorithms.insert("rainbow", rainbow);
+
+    algorithms
 }

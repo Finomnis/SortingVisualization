@@ -8,7 +8,8 @@ use std::fs::create_dir_all;
 use sortable_data::SortableData;
 use sorting_algorithms::get_algorithms;
 use visualizations::console::ConsoleVisualization;
-use visualizations::image::{color_palettes, ImageVisualization};
+use visualizations::image::color_palettes::get_palettes;
+use visualizations::image::ImageVisualization;
 
 fn main() {
     let options = options::parse_command_line_options();
@@ -33,7 +34,7 @@ fn main() {
 
         let mut console_visualization = ConsoleVisualization::new();
         let mut image_visualization = ImageVisualization::new(512, 1024, num_steps)
-            .use_color_palette(color_palettes::rainbow);
+            .use_color_palette(get_palettes()[options.palette.as_str()]);
 
         SortableData::new(512)
             .add_visualization(&mut console_visualization)
