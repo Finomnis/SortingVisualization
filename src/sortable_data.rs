@@ -7,6 +7,7 @@ pub struct SortableData<'a> {
     data: Vec<f32>,
     pub rng: ChaCha20Rng,
     visualizations: Vec<&'a mut dyn SortingVisualization>,
+    step_counter: usize,
 }
 
 impl<'a> SortableData<'a> {
@@ -25,11 +26,18 @@ impl<'a> SortableData<'a> {
             data,
             rng,
             visualizations: vec![],
+            step_counter: 0,
         }
     }
 
     pub fn sort(mut self, algorithm: impl Fn(&mut SortableData)) -> Self {
+        for visualization in &mut self.visualizations {
+            visualization.on_start(&self.data);
+        }
         algorithm(&mut self);
+        for visualization in &mut self.visualizations {
+            visualization.on_finished();
+        }
         self
     }
 
@@ -40,13 +48,18 @@ impl<'a> SortableData<'a> {
 
     pub fn swap(&mut self, a: usize, b: usize) {
         self.data.swap(a, b);
-        for visualization in &self.visualizations {
+        self.step_counter += 1;
+        for visualization in &mut self.visualizations {
             visualization.on_data_changed(&self.data);
         }
     }
 
     pub fn len(&self) -> usize {
         self.data.len()
+    }
+
+    pub fn num_steps(&self) -> usize {
+        self.step_counter
     }
 }
 
