@@ -16,7 +16,7 @@ fn main() {
 
     let mut console_visualization = ConsoleVisualization::new();
     let mut image_visualization =
-        ImageVisualization::new(512, 1024, num_steps).use_color_palette(color_palettes::grayscale);
+        ImageVisualization::new(512, 1024, num_steps).use_color_palette(color_palettes::rainbow);
 
     SortableData::new(512)
         .add_visualization(&mut console_visualization)
