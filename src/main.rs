@@ -21,7 +21,7 @@ fn main() {
     SortableData::new(512)
         .add_visualization(&mut console_visualization)
         .add_visualization(&mut image_visualization)
-        .sort(sorting_algorithms::insertion_sort);
+        .sort(sorting_algorithms::bubble_sort);
 
     image_visualization.save("test.png");
 }
