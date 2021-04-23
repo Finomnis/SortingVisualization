@@ -43,6 +43,7 @@ fn main() {
 
             log::info!("First iteration done. Frames: {}", num_frames);
             log::debug!("Result if first run: {}", result);
+            log::debug!("Sorted: {}", result.is_sorted());
             num_frames
         };
 
