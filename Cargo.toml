@@ -1,5 +1,5 @@
 [package]
-name = "SortingVisualizations"
+name = "sorting_visualizations"
 version = "0.1.0"
 authors = ["Finomnis <finomnis@gmail.com>"]
 edition = "2018"
