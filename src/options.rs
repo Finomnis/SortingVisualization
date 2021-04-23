@@ -20,11 +20,11 @@ pub struct Options {
     pub algorithm: Option<String>,
 
     /// The width of the output image
-    #[clap(long, short, default_value = "512")]
+    #[clap(long, default_value = "512")]
     pub width: usize,
 
     /// The height of the output image
-    #[clap(long, short, default_value = "1024")]
+    #[clap(long, default_value = "1024")]
     pub height: usize,
 }
 
