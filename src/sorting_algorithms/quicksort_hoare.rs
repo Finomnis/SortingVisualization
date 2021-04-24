@@ -31,12 +31,4 @@ pub fn sort(data: &mut SortableData) {
     quicksort(data, 0, data.len() - 1);
 }
 
-#[cfg(test)]
-mod tests {
-    #[tokio::test]
-    async fn sort() {
-        let mut result = crate::sortable_data::SortableData::new(10000);
-        result.sort(super::sort).await;
-        assert!(result.is_sorted());
-    }
-}
+crate::test_algorithm!();

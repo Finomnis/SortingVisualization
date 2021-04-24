@@ -36,15 +36,4 @@ pub async fn sort(data: Arc<RwLock<SortableData>>) {
     quicksort(data, 0, len - 1).await;
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::sortable_data::SortableData;
-    use std::sync::{Arc, RwLock};
-
-    #[tokio::test]
-    async fn sort() {
-        let result = Arc::new(RwLock::new(SortableData::new(10000)));
-        SortableData::sort(result.clone(), |data| Box::pin(super::sort(data))).await;
-        assert!(result.read().unwrap().is_sorted());
-    }
-}
+crate::test_async_algorithm!();
