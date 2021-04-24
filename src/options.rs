@@ -12,7 +12,7 @@ pub struct Options {
     pub verbose: i32,
 
     /// The color palette to use for the final image
-    #[clap(long, default_value="parula", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
+    #[clap(long, default_value="gray", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
     pub palette: String,
 
     /// Only run specified sorting algorithm
