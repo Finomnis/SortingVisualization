@@ -5,7 +5,7 @@ mod visualizations;
 
 use std::{
     fs::create_dir_all,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, RwLock},
 };
 
 use sortable_data::SortableData;
@@ -42,26 +42,28 @@ async fn main() {
         // First: figure out the number of frames required
         // Second: write frames to image
         let num_frames = {
-            let mut data = SortableData::new(options.width);
-            data.sort(algorithm).await;
-            let num_frames = data.num_frames();
+            let data = Arc::new(RwLock::new(SortableData::new(options.width)));
+            SortableData::sort(data.clone(), algorithm).await;
+            let num_frames = data.read().unwrap().num_frames();
 
             log::info!("First iteration done. Frames: {}", num_frames);
-            log::debug!("Result if first run: {}", data);
-            log::debug!("Sorted: {}", data.is_sorted());
+            log::debug!("Result if first run: {}", data.read().unwrap());
+            log::debug!("Sorted: {}", data.read().unwrap().is_sorted());
             num_frames
         };
 
-        let mut console_visualization = Arc::new(Mutex::new(ConsoleVisualization::new()));
-        let mut image_visualization = Arc::new(Mutex::new(
+        let console_visualization = Arc::new(Mutex::new(ConsoleVisualization::new()));
+        let image_visualization = Arc::new(Mutex::new(
             ImageVisualization::new(options.width, options.height, num_frames)
                 .use_color_palette(get_palettes()[options.palette.as_str()]),
         ));
 
-        let mut data = SortableData::new(options.width)
-            .add_visualization(console_visualization.clone())
-            .add_visualization(image_visualization.clone());
-        data.sort(algorithm).await;
+        let data = Arc::new(RwLock::new(
+            SortableData::new(options.width)
+                .add_visualization(console_visualization.clone())
+                .add_visualization(image_visualization.clone()),
+        ));
+        SortableData::sort(data, algorithm).await;
 
         create_dir_all("images/").unwrap();
         image_visualization

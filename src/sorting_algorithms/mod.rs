@@ -6,29 +6,91 @@ mod insertion_sort;
 mod merge_sort;
 mod odd_even_sort;
 mod quicksort_hoare;
+mod quicksort_hoare_async;
 mod quicksort_lomuto;
 mod selection_sort;
 mod shellsort;
 
-use crate::sortable_data::SortableData;
-use std::collections::HashMap;
+use futures::future::BoxFuture;
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
-pub type SortingAlgorithm = fn(data: &mut SortableData) -> ();
+use crate::sortable_data::SortableData;
+
+pub type SortingAlgorithm = fn(data: Arc<RwLock<SortableData>>) -> BoxFuture<'static, ()>;
+
+macro_rules! register_async_algorithm {
+    ($algorithms:ident, $name:ident) => {
+        $algorithms.insert(stringify!($name), |data| Box::pin($name::sort(data)));
+    };
+}
+
+macro_rules! register_algorithm {
+    ($algorithms:ident, $name:ident) => {
+        $algorithms.insert(stringify!($name), |data| {
+            $name::sort(&mut data.write().unwrap());
+            Box::pin(std::future::ready(()))
+        });
+    };
+}
+
+#[macro_export]
+macro_rules! test_async_algorithm {
+    () => {
+        #[cfg(test)]
+        mod tests {
+            use crate::sortable_data::SortableData;
+            use std::sync::{Arc, RwLock};
+
+            #[tokio::test]
+            async fn sort() {
+                let result = Arc::new(RwLock::new(SortableData::new(10000)));
+                SortableData::sort(result.clone(), |data| Box::pin(super::sort(data))).await;
+                assert!(result.read().unwrap().is_sorted());
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! test_algorithm {
+    () => {
+        #[cfg(test)]
+        mod tests {
+            use crate::sortable_data::SortableData;
+            use std::sync::{Arc, RwLock};
+
+            #[tokio::test]
+            async fn sort() {
+                let result = Arc::new(RwLock::new(SortableData::new(10000)));
+                SortableData::sort(result.clone(), |data| {
+                    super::sort(&mut data.write().unwrap());
+                    Box::pin(std::future::ready(()))
+                })
+                .await;
+                assert!(result.read().unwrap().is_sorted());
+            }
+        }
+    };
+}
 
 pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     let mut algorithms: HashMap<&'static str, SortingAlgorithm> = HashMap::new();
 
-    algorithms.insert("bubble_sort", bubble_sort::sort);
-    algorithms.insert("insertion_sort", insertion_sort::sort);
-    algorithms.insert("selection_sort", selection_sort::sort);
-    algorithms.insert("cycle_sort", cycle_sort::sort);
-    algorithms.insert("cocktail_shaker_sort", cocktail_shaker_sort::sort);
-    algorithms.insert("comb_sort", comb_sort::sort);
-    algorithms.insert("odd_even_sort", odd_even_sort::sort);
-    algorithms.insert("shellsort", shellsort::sort);
-    algorithms.insert("quicksort_hoare", quicksort_hoare::sort);
-    algorithms.insert("quicksort_lomuto", quicksort_lomuto::sort);
-    algorithms.insert("merge_sort", merge_sort::sort);
+    register_algorithm!(algorithms, bubble_sort);
+    register_algorithm!(algorithms, insertion_sort);
+    register_algorithm!(algorithms, selection_sort);
+    register_algorithm!(algorithms, cycle_sort);
+    register_algorithm!(algorithms, cocktail_shaker_sort);
+    register_algorithm!(algorithms, comb_sort);
+    register_algorithm!(algorithms, odd_even_sort);
+    register_algorithm!(algorithms, shellsort);
+    register_algorithm!(algorithms, quicksort_hoare);
+    register_async_algorithm!(algorithms, quicksort_hoare_async);
+    register_algorithm!(algorithms, quicksort_lomuto);
+    register_algorithm!(algorithms, merge_sort);
 
     algorithms
 }
