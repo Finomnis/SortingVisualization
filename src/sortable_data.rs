@@ -6,6 +6,8 @@ use rand_chacha::ChaCha20Rng;
 use crate::sorting_algorithms::SortingAlgorithm;
 use crate::visualizations::SortingVisualization;
 
+pub type AsyncSortableData = Arc<RwLock<SortableData>>;
+
 pub struct SortableData {
     data: Vec<u32>,
     pub rng: ChaCha20Rng,

@@ -8,18 +8,16 @@ mod odd_even_sort;
 mod quicksort_hoare;
 mod quicksort_hoare_async;
 mod quicksort_lomuto;
+mod quicksort_lomuto_async;
 mod selection_sort;
 mod shellsort;
 
 use futures::future::BoxFuture;
-use std::{
-    collections::HashMap,
-    sync::{Arc, RwLock},
-};
+use std::collections::HashMap;
 
-use crate::sortable_data::SortableData;
+use crate::sortable_data::AsyncSortableData;
 
-pub type SortingAlgorithm = fn(data: Arc<RwLock<SortableData>>) -> BoxFuture<'static, ()>;
+pub type SortingAlgorithm = fn(data: AsyncSortableData) -> BoxFuture<'static, ()>;
 
 macro_rules! register_async_algorithm {
     ($algorithms:ident, $name:ident) => {
@@ -90,6 +88,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     register_algorithm!(algorithms, quicksort_hoare);
     register_async_algorithm!(algorithms, quicksort_hoare_async);
     register_algorithm!(algorithms, quicksort_lomuto);
+    register_async_algorithm!(algorithms, quicksort_lomuto_async);
     register_algorithm!(algorithms, merge_sort);
 
     algorithms
