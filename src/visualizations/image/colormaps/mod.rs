@@ -28,14 +28,38 @@ fn from_colormap(value: f32, colormap: &[[f32; 3]; 256]) -> [u8; 3] {
 
 macro_rules! register_colormap {
     ($palettes:ident, $colormap:ident) => {
-        $palettes.insert("parula", |value: f32| {
+        $palettes.insert(stringify!($colormap), |value: f32| {
             from_colormap(value, &$colormap::colormap())
         });
     };
 }
 
+mod autumn;
+mod bone;
+mod cool;
+mod copper;
+mod hot;
+mod hsv;
+mod jet;
 mod parula;
+mod pink;
+mod spring;
+mod summer;
+mod turbo;
+mod winter;
 
 pub fn register_colormaps(palettes: &mut HashMap<&'static str, ColorPalette>) {
     register_colormap!(palettes, parula);
+    register_colormap!(palettes, turbo);
+    register_colormap!(palettes, hsv);
+    register_colormap!(palettes, hot);
+    register_colormap!(palettes, cool);
+    register_colormap!(palettes, spring);
+    register_colormap!(palettes, summer);
+    register_colormap!(palettes, autumn);
+    register_colormap!(palettes, winter);
+    register_colormap!(palettes, bone);
+    register_colormap!(palettes, copper);
+    register_colormap!(palettes, pink);
+    register_colormap!(palettes, jet);
 }

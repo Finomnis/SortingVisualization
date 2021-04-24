@@ -21,7 +21,7 @@ fn rainbow(value: f32) -> [u8; 3] {
 pub fn get_palettes() -> HashMap<&'static str, ColorPalette> {
     let mut palettes: HashMap<&'static str, ColorPalette> = HashMap::new();
 
-    palettes.insert("grayscale", grayscale);
+    palettes.insert("gray", grayscale);
     palettes.insert("rainbow", rainbow);
     register_colormaps(&mut palettes);
 
