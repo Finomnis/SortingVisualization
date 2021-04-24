@@ -6,6 +6,7 @@ mod insertion_sort;
 mod merge_sort;
 mod merge_sort_async;
 mod merge_sort_recursive;
+mod merge_sort_recursive_async;
 mod odd_even_sort;
 mod quicksort_hoare;
 mod quicksort_hoare_async;
@@ -93,6 +94,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     register_async_algorithm!(algorithms, quicksort_lomuto_async);
     register_algorithm!(algorithms, merge_sort);
     register_algorithm!(algorithms, merge_sort_recursive);
+    register_async_algorithm!(algorithms, merge_sort_recursive_async);
     register_async_algorithm!(algorithms, merge_sort_async);
 
     algorithms
