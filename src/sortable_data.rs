@@ -5,7 +5,7 @@ use crate::sorting_algorithms::SortingAlgorithm;
 use crate::visualizations::SortingVisualization;
 
 pub struct SortableData<'a> {
-    data: Vec<f32>,
+    data: Vec<u32>,
     pub rng: ChaCha20Rng,
     visualizations: Vec<&'a mut dyn SortingVisualization>,
     frame_counter: usize,
@@ -15,7 +15,7 @@ impl<'a> SortableData<'a> {
     pub fn new(size: usize) -> Self {
         let mut data = Vec::new();
         for i in 0..size {
-            let value = (i as f32) / ((size - 1) as f32);
+            let value = i as u32;
             data.push(value);
         }
 
@@ -69,7 +69,7 @@ impl<'a> SortableData<'a> {
     }
 
     pub fn is_sorted(&self) -> bool {
-        let mut prev = f32::NEG_INFINITY;
+        let mut prev = u32::MIN;
         for &next in &self.data {
             if prev > next {
                 return false;
@@ -81,7 +81,7 @@ impl<'a> SortableData<'a> {
 }
 
 impl<'a> std::ops::Index<usize> for SortableData<'a> {
-    type Output = f32;
+    type Output = u32;
 
     fn index(&self, index: usize) -> &Self::Output {
         self.data.index(index)

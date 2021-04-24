@@ -43,12 +43,16 @@ impl CurrentLine {
         }
     }
 
-    fn add(&mut self, data: &Vec<f32>) {
+    fn add(&mut self, data: &Vec<u32>) {
         assert!(data.len() == self.data.len());
 
         let color_palette = self.color_palette;
 
-        for (pos, [red, green, blue]) in data.iter().map(|&val| color_palette(val)).enumerate() {
+        for (pos, [red, green, blue]) in data
+            .iter()
+            .map(|&val| color_palette(val as f32 / (data.len() - 1) as f32))
+            .enumerate()
+        {
             self.data[pos].red += red as u32;
             self.data[pos].green += green as u32;
             self.data[pos].blue += blue as u32;
@@ -110,7 +114,7 @@ impl SortingVisualization for ImageVisualization {
         self.image = ImageBuffer::new(self.width as u32, self.height as u32);
     }
 
-    fn on_data_changed(&mut self, data: &Vec<f32>) {
+    fn on_data_changed(&mut self, data: &Vec<u32>) {
         let desired_line_pos = (((self.current_frame * (self.height - 1)) as f32)
             / ((self.num_frames - 1) as f32))
             .round() as usize;
