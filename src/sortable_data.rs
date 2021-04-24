@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, RwLock};
 
 use rand::{seq::SliceRandom, SeedableRng};
 use rand_chacha::ChaCha20Rng;
@@ -9,7 +9,7 @@ use crate::visualizations::SortingVisualization;
 pub struct SortableData {
     data: Vec<u32>,
     pub rng: ChaCha20Rng,
-    visualizations: Vec<Arc<Mutex<dyn SortingVisualization>>>,
+    visualizations: Vec<Arc<Mutex<dyn SortingVisualization + Send>>>,
     frame_counter: usize,
 }
 
@@ -33,20 +33,20 @@ impl SortableData {
         }
     }
 
-    pub async fn sort(&mut self, algorithm: SortingAlgorithm) {
-        for visualization in &mut self.visualizations {
+    pub async fn sort(data: Arc<RwLock<Self>>, algorithm: SortingAlgorithm) {
+        for visualization in &mut data.write().unwrap().visualizations {
             visualization.lock().unwrap().on_start();
         }
-        algorithm(self);
-        self.send_frame();
-        for visualization in &mut self.visualizations {
+        algorithm(data.clone()).await;
+        data.write().unwrap().send_frame();
+        for visualization in &mut data.write().unwrap().visualizations {
             visualization.lock().unwrap().on_finished();
         }
     }
 
     pub fn add_visualization(
         mut self,
-        visualization: Arc<Mutex<dyn SortingVisualization>>,
+        visualization: Arc<Mutex<dyn SortingVisualization + Send>>,
     ) -> Self {
         self.visualizations.push(visualization);
         self
