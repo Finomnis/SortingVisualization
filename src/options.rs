@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 use clap::{crate_version, AppSettings, Clap};
 
 use crate::sorting_algorithms::get_algorithms;
@@ -12,11 +14,11 @@ pub struct Options {
     pub verbose: i32,
 
     /// The color palette to use for the final image
-    #[clap(long, default_value="gray", possible_values = &get_palettes().keys().cloned().collect::<Vec<_>>()[..])]
+    #[clap(long, default_value="gray", possible_values = &get_palettes().keys().cloned().sorted().collect::<Vec<_>>()[..])]
     pub palette: String,
 
     /// Only run specified sorting algorithm
-    #[clap(long, possible_values = &get_algorithms().keys().cloned().collect::<Vec<_>>()[..])]
+    #[clap(long, possible_values = &get_algorithms().keys().cloned().sorted().collect::<Vec<_>>()[..])]
     pub algorithm: Option<String>,
 
     /// The width of the output image

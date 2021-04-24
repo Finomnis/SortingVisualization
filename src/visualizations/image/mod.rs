@@ -1,5 +1,4 @@
 pub mod color_palettes;
-mod colormaps;
 
 use ::image::{ImageBuffer, RgbImage};
 
