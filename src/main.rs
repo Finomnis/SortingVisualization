@@ -3,7 +3,10 @@ mod sortable_data;
 mod sorting_algorithms;
 mod visualizations;
 
-use std::fs::create_dir_all;
+use std::{
+    fs::create_dir_all,
+    sync::{Arc, Mutex},
+};
 
 use sortable_data::SortableData;
 use sorting_algorithms::get_algorithms;
@@ -49,17 +52,21 @@ async fn main() {
             num_frames
         };
 
-        let mut console_visualization = ConsoleVisualization::new();
-        let mut image_visualization =
+        let mut console_visualization = Arc::new(Mutex::new(ConsoleVisualization::new()));
+        let mut image_visualization = Arc::new(Mutex::new(
             ImageVisualization::new(options.width, options.height, num_frames)
-                .use_color_palette(get_palettes()[options.palette.as_str()]);
+                .use_color_palette(get_palettes()[options.palette.as_str()]),
+        ));
 
         let mut data = SortableData::new(options.width)
-            .add_visualization(&mut console_visualization)
-            .add_visualization(&mut image_visualization);
+            .add_visualization(console_visualization.clone())
+            .add_visualization(image_visualization.clone());
         data.sort(algorithm).await;
 
         create_dir_all("images/").unwrap();
-        image_visualization.save(&format!("images/{}.png", name));
+        image_visualization
+            .lock()
+            .unwrap()
+            .save(&format!("images/{}.png", name));
     }
 }
