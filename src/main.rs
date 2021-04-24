@@ -53,10 +53,12 @@ async fn main() {
         };
 
         let console_visualization = Arc::new(Mutex::new(ConsoleVisualization::new()));
-        let image_visualization = Arc::new(Mutex::new(
-            ImageVisualization::new(options.width, options.height, num_frames)
-                .use_color_palette(get_palettes()[options.palette.as_str()]),
-        ));
+        let image_visualization = Arc::new(Mutex::new(ImageVisualization::new(
+            options.width,
+            options.height,
+            num_frames,
+            get_palettes()[options.palette.as_str()],
+        )));
 
         let data = Arc::new(RwLock::new(
             SortableData::new(options.width)

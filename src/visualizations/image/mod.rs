@@ -1,4 +1,5 @@
 pub mod color_palettes;
+mod colormaps;
 
 use ::image::{ImageBuffer, RgbImage};
 
@@ -83,22 +84,22 @@ pub struct ImageVisualization {
 }
 
 impl ImageVisualization {
-    pub fn new(width: usize, height: usize, num_frames: usize) -> Self {
+    pub fn new(
+        width: usize,
+        height: usize,
+        num_frames: usize,
+        color_palette: ColorPalette,
+    ) -> Self {
         Self {
             width,
             height,
             num_frames,
             image: ImageBuffer::new(width as u32, height as u32),
             current_frame: 0,
-            current_line: CurrentLine::new(width, color_palettes::grayscale),
+            current_line: CurrentLine::new(width, color_palette),
             current_line_pos: 0,
-            color_palette: color_palettes::grayscale,
+            color_palette,
         }
-    }
-
-    pub fn use_color_palette(mut self, palette: ColorPalette) -> Self {
-        self.color_palette = palette;
-        self
     }
 
     pub fn save(&self, path: &str) {
