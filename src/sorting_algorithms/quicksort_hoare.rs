@@ -33,9 +33,10 @@ pub fn sort(data: &mut SortableData) {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn sort() {
-        let result = crate::sortable_data::SortableData::new(10000).sort(super::sort);
+    #[tokio::test]
+    async fn sort() {
+        let mut result = crate::sortable_data::SortableData::new(10000);
+        result.sort(super::sort).await;
         assert!(result.is_sorted());
     }
 }

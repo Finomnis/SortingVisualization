@@ -31,16 +31,15 @@ impl<'a> SortableData<'a> {
         }
     }
 
-    pub fn sort(mut self, algorithm: SortingAlgorithm) -> Self {
+    pub async fn sort(&mut self, algorithm: SortingAlgorithm) {
         for visualization in &mut self.visualizations {
             visualization.on_start();
         }
-        algorithm(&mut self);
+        algorithm(self);
         self.send_frame();
         for visualization in &mut self.visualizations {
             visualization.on_finished();
         }
-        self
     }
 
     pub fn add_visualization(mut self, visualization: &'a mut impl SortingVisualization) -> Self {

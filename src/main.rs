@@ -11,7 +11,8 @@ use visualizations::console::ConsoleVisualization;
 use visualizations::image::color_palettes::get_palettes;
 use visualizations::image::ImageVisualization;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let options = options::parse_command_line_options();
 
     // Initialize logger
@@ -38,12 +39,13 @@ fn main() {
         // First: figure out the number of frames required
         // Second: write frames to image
         let num_frames = {
-            let result = SortableData::new(options.width).sort(algorithm);
-            let num_frames = result.num_frames();
+            let mut data = SortableData::new(options.width);
+            data.sort(algorithm).await;
+            let num_frames = data.num_frames();
 
             log::info!("First iteration done. Frames: {}", num_frames);
-            log::debug!("Result if first run: {}", result);
-            log::debug!("Sorted: {}", result.is_sorted());
+            log::debug!("Result if first run: {}", data);
+            log::debug!("Sorted: {}", data.is_sorted());
             num_frames
         };
 
@@ -52,10 +54,10 @@ fn main() {
             ImageVisualization::new(options.width, options.height, num_frames)
                 .use_color_palette(get_palettes()[options.palette.as_str()]);
 
-        SortableData::new(options.width)
+        let mut data = SortableData::new(options.width)
             .add_visualization(&mut console_visualization)
-            .add_visualization(&mut image_visualization)
-            .sort(algorithm);
+            .add_visualization(&mut image_visualization);
+        data.sort(algorithm).await;
 
         create_dir_all("images/").unwrap();
         image_visualization.save(&format!("images/{}.png", name));
