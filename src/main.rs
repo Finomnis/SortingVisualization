@@ -8,6 +8,8 @@ use std::{
     sync::{Arc, Mutex, RwLock},
 };
 
+use itertools::Itertools;
+
 use sortable_data::SortableData;
 use sorting_algorithms::get_algorithms;
 use visualizations::console::ConsoleVisualization;
@@ -28,7 +30,7 @@ async fn main() {
     ))
     .init();
 
-    for (name, algorithm) in get_algorithms() {
+    for (&name, &algorithm) in get_algorithms().iter().sorted_by_key(|(&name, _)| name) {
         // If an algorithm is specified on the command line, only run that algorithm
         if let Some(wanted_algorithm) = &options.algorithm {
             if wanted_algorithm != name {
@@ -36,7 +38,7 @@ async fn main() {
             }
         }
 
-        log::info!("Running {} ...", name);
+        log::info!("=========== {} ===========", name);
 
         // Two passes required:
         // First: figure out the number of frames required
@@ -47,7 +49,8 @@ async fn main() {
             let num_frames = data.read().unwrap().num_frames();
 
             log::info!("First iteration done. Frames: {}", num_frames);
-            log::debug!("Result if first run: {}", data.read().unwrap());
+            data.read().unwrap().print_performance_stats();
+            log::debug!("Result of first run: {}", data.read().unwrap());
             log::debug!("Sorted: {}", data.read().unwrap().is_sorted());
             num_frames
         };

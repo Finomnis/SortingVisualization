@@ -1,4 +1,7 @@
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{
+    atomic::{AtomicUsize, Ordering},
+    Arc, Mutex, RwLock,
+};
 
 use rand::{seq::SliceRandom, SeedableRng};
 use rand_chacha::ChaCha20Rng;
@@ -13,6 +16,9 @@ pub struct SortableData {
     pub rng: ChaCha20Rng,
     visualizations: Vec<Arc<Mutex<dyn SortingVisualization + Send>>>,
     frame_counter: usize,
+    num_reads: AtomicUsize,
+    num_writes: usize,
+    num_swaps: usize,
 }
 
 impl SortableData {
@@ -32,6 +38,9 @@ impl SortableData {
             rng,
             visualizations: vec![],
             frame_counter: 0,
+            num_reads: AtomicUsize::new(0),
+            num_writes: 0,
+            num_swaps: 0,
         }
     }
 
@@ -56,6 +65,7 @@ impl SortableData {
 
     pub fn swap(&mut self, a: usize, b: usize) {
         self.send_frame();
+        self.num_swaps += 1;
         self.data.swap(a, b);
     }
 
@@ -84,12 +94,19 @@ impl SortableData {
         }
         return true;
     }
+
+    pub fn print_performance_stats(&self) {
+        log::info!("Reads:  {}", self.num_reads.load(Ordering::SeqCst));
+        log::info!("Writes: {}", self.num_writes);
+        log::info!("Swaps:  {}", self.num_swaps);
+    }
 }
 
 impl std::ops::Index<usize> for SortableData {
     type Output = u32;
 
     fn index(&self, index: usize) -> &Self::Output {
+        self.num_reads.fetch_add(1, Ordering::SeqCst);
         self.data.index(index)
     }
 }
@@ -97,6 +114,7 @@ impl std::ops::Index<usize> for SortableData {
 impl std::ops::IndexMut<usize> for SortableData {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.send_frame();
+        self.num_writes += 1;
         self.data.index_mut(index)
     }
 }
