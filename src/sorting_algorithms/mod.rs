@@ -4,6 +4,8 @@ mod comb_sort;
 mod cycle_sort;
 mod heapsort;
 mod insertion_sort;
+mod insertion_sort_fast;
+mod introsort;
 mod merge_sort;
 mod merge_sort_async;
 mod merge_sort_recursive;
@@ -83,6 +85,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
 
     register_algorithm!(algorithms, bubble_sort);
     register_algorithm!(algorithms, insertion_sort);
+    register_algorithm!(algorithms, insertion_sort_fast);
     register_algorithm!(algorithms, selection_sort);
     register_algorithm!(algorithms, cycle_sort);
     register_algorithm!(algorithms, cocktail_shaker_sort);
@@ -98,6 +101,7 @@ pub fn get_algorithms() -> HashMap<&'static str, SortingAlgorithm> {
     register_async_algorithm!(algorithms, merge_sort_recursive_async);
     register_async_algorithm!(algorithms, merge_sort_async);
     register_algorithm!(algorithms, heapsort);
+    register_algorithm!(algorithms, introsort);
 
     algorithms
 }

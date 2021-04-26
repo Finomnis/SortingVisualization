@@ -1,27 +1,28 @@
 use crate::sortable_data::SortableData;
 
-fn get_parent(pos: usize) -> usize {
-    (pos - 1) / 2
+fn get_parent(start: usize, pos: usize) -> usize {
+    ((pos - start) - 1) / 2 + start
 }
 
-fn get_children(pos: usize) -> (usize, usize) {
-    (2 * pos + 1, 2 * pos + 2)
+fn get_children(start: usize, pos: usize) -> (usize, usize) {
+    let pos = pos - start;
+    (2 * pos + 1 + start, 2 * pos + 2 + start)
 }
 
-fn bubble_up(data: &mut SortableData, element: usize) {
-    if element == 0 {
+fn bubble_up(data: &mut SortableData, start: usize, element: usize) {
+    if element == start {
         return;
     }
 
-    let parent = get_parent(element);
+    let parent = get_parent(start, element);
     if data[parent] < data[element] {
         data.swap(parent, element);
-        bubble_up(data, parent);
+        bubble_up(data, start, parent);
     }
 }
 
-fn bubble_down(data: &mut SortableData, element: usize, heap_size: usize) {
-    let (child_0, child_1) = get_children(element);
+fn bubble_down(data: &mut SortableData, element: usize, start: usize, heap_size: usize) {
+    let (child_0, child_1) = get_children(start, element);
 
     if child_0 >= heap_size && child_1 >= heap_size {
         return;
@@ -38,19 +39,23 @@ fn bubble_down(data: &mut SortableData, element: usize, heap_size: usize) {
 
     if data[child] > data[element] {
         data.swap(child, element);
-        bubble_down(data, child, heap_size);
+        bubble_down(data, child, start, heap_size);
+    }
+}
+
+pub fn heapsort(data: &mut SortableData, start: usize, end: usize) {
+    for element in start..end {
+        bubble_up(data, start, element);
+    }
+
+    for element in ((start + 1)..end).rev() {
+        data.swap(element, start);
+        bubble_down(data, start, start, element)
     }
 }
 
 pub fn sort(data: &mut SortableData) {
-    for element in 0..data.len() {
-        bubble_up(data, element);
-    }
-
-    for element in (1..data.len()).rev() {
-        data.swap(element, 0);
-        bubble_down(data, 0, element)
-    }
+    heapsort(data, 0, data.len());
 }
 
 crate::test_algorithm!();
