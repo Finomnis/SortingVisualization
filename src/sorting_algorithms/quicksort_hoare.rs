@@ -3,20 +3,24 @@ use crate::sortable_data::SortableData;
 fn quicksort(data: &mut SortableData, lo: usize, hi: usize) {
     if lo < hi {
         let p = partition(data, lo, hi);
-        quicksort(data, lo, p);
-        quicksort(data, p + 1, hi);
+        if p > lo + 1 {
+            quicksort(data, lo, p - 1);
+        }
+        if p + 1 < hi {
+            quicksort(data, p + 1, hi);
+        }
     }
 }
 
-fn partition(data: &mut SortableData, lo: usize, hi: usize) -> usize {
+pub fn partition(data: &mut SortableData, lo: usize, hi: usize) -> usize {
     let pivot = data[(hi + lo) / 2];
     let mut i = lo;
     let mut j = hi;
     loop {
-        while data[i] < pivot && i < j {
+        while i < j && data[i] < pivot {
             i = i + 1;
         }
-        while data[j] > pivot && i < j {
+        while i < j && data[j] > pivot {
             j = j - 1;
         }
         if i >= j {
