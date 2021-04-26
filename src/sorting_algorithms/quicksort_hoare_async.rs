@@ -20,18 +20,27 @@ async fn quicksort(data: AsyncSortableData, lo: usize, hi: usize) {
 }
 
 async fn partition(data: &AsyncSortableData, lo: usize, hi: usize) -> usize {
-    let pivot = data.read().unwrap()[(hi + lo) / 2];
-    let mut i = lo;
+    if lo == hi {
+        return lo;
+    }
+    let pivot = data.read().unwrap()[lo];
+    let mut i = lo + 1;
     let mut j = hi;
     loop {
-        while i < j && data.read().unwrap()[i] < pivot {
-            i = i + 1;
-        }
         while i < j && data.read().unwrap()[j] > pivot {
             j = j - 1;
         }
+        while i < j && data.read().unwrap()[i] < pivot {
+            i = i + 1;
+        }
         if i >= j {
-            return j;
+            if data.read().unwrap()[j] < pivot {
+                data.write().unwrap().swap(lo, j);
+                tokio::task::yield_now().await;
+                return j;
+            } else {
+                return lo;
+            }
         }
         data.write().unwrap().swap(i, j);
         tokio::task::yield_now().await;
