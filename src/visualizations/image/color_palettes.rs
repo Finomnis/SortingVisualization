@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use palette::IntoColor;
+
 use super::clamp;
 
 pub type ColorPalette = fn(f32) -> [u8; 3];
@@ -10,7 +12,7 @@ fn grayscale(value: f32) -> [u8; 3] {
 }
 
 fn rainbow(value: f32) -> [u8; 3] {
-    let rgb: palette::rgb::Rgb = palette::Hsv::new(value * 240.0, 1.0, 1.0).into();
+    let rgb: palette::rgb::Rgb = palette::Hsv::new(value * 240.0, 1.0, 1.0).into_color();
     let red = (rgb.red * 255.0).round() as u8;
     let green = (rgb.green * 255.0).round() as u8;
     let blue = (rgb.blue * 255.0).round() as u8;

@@ -2,24 +2,20 @@
 name = "sorting_visualizations"
 version = "0.1.0"
 authors = ["Finomnis <finomnis@gmail.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rand = "0.8.3"
 rand_chacha = "0.3.0"
-image = "0.23.14"
-palette = "0.5.0"
+image = "0.24.3"
+palette = "0.6.1"
 log = "0.4.0"
-env_logger = "0.8.3"
-tokio = { version = "1", features = ["full"] }
+env_logger = "0.9.0"
+tokio = { version = "1.21.0", features = ["full"] }
 futures = "0.3.14"
-async-recursion = "0.3.2"
+async-recursion = "1.0.0"
 colorous = "1.0.3"
 itertools = "0.10.0"
-
-clap = { git = "https://github.com/clap-rs/clap/" }
-
-[profile.release]
-debug = true
+clap = { version = "3.2.20", features = ["derive"] }
